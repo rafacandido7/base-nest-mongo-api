@@ -26,6 +26,7 @@ export class UserDto extends BaseDto {
 
   @ApiProperty({ example: 'nice_username' })
   @IsNotEmpty()
+  @MinLength(6)
   @IsString()
   username: string
 

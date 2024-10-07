@@ -1,5 +1,12 @@
+/* eslint-disable new-cap */
 import { Injectable } from '@nestjs/common'
-import { FilterQuery, Model, PipelineStage, Types } from 'mongoose'
+import {
+  ClientSession,
+  FilterQuery,
+  Model,
+  PipelineStage,
+  Types,
+} from 'mongoose'
 
 import { Projection } from '../types'
 
@@ -7,8 +14,12 @@ import { Projection } from '../types'
 export class GenericRepository<T> {
   constructor(protected genericModel: Model<T>) {}
 
-  async create(entity: unknown): Promise<T> {
-    return await this.genericModel.create(entity)
+  async create(createEntityDto: unknown, session?: ClientSession): Promise<T> {
+    const document = new this.genericModel(createEntityDto)
+
+    await this.genericModel.create([document], { session })
+
+    return document
   }
 
   async findAll(): Promise<T[]> {
@@ -46,7 +57,10 @@ export class GenericRepository<T> {
     projection?: Projection<T>,
   ): Promise<T> {
     return this.genericModel
-      .findByIdAndUpdate(_id, entity, { new: true, projection })
+      .findByIdAndUpdate(_id, entity, {
+        new: true,
+        projection,
+      })
       .exec()
   }
 

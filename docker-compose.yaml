@@ -1,33 +1,31 @@
 version: '3.8'
 
 services:
-  nestjs-app:
-    image: node:18
-    container_name: base-api
-    working_dir: /app
-    volumes:
-      - .:/app
-    ports:
-      - "8080:8080"
-    environment:
-      - DATABASE_URL=mongodb://root:root@mongodb:27017
-      - API_PORT=8080
-    command: bash -c "npm i -g npm@latest && npm install --legacy-peer-deps && npm run build && npm run start:prod"
-    depends_on:
-      - mongodb
-    networks:
-      - net
 
   mongodb:
     image: mongo:latest
-    container_name: products_db
+    container_name: mongodb-baseapi
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_ROOT_USERNAME=mongoAtlasAdmin
+      - MONGO_INITDB_ROOT_PASSWORD=HOyYMG1KoDfuYLf7IqqP
     networks:
       - net
+
+  # mongodb:
+  #   image: mongodb/mongodb-atlas-local
+  #   container_name: mongodb-atlas-baseapi
+  #   environment:
+  #     - MONGODB_INITDB_ROOT_USERNAME=mongoAtlasAdmin
+  #     - MONGODB_INITDB_ROOT_PASSWORD=HOyYMG1KoDfuYLf7IqqP
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - ./data/mongo:/data/db
+  #   restart: always
+  #   networks:
+  #     - net
 
 networks:
   net:

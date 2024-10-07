@@ -14,9 +14,9 @@ export class AuthService {
   ) {}
 
   async signIn(authenticateDto: SignInDto) {
-    const { email, password } = authenticateDto
+    const { login, password } = authenticateDto
 
-    const user = await this.usersService.findOneByEmail(email)
+    const user = await this.usersService.findOneByCredentials(login)
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials!')
@@ -47,7 +47,11 @@ export class AuthService {
       password: hashedPassword,
     })
 
-    const accessToken = await this.generateAccessToken(newUser._id)
+    if (!newUser && newUser._id) {
+      throw new Error('User not created!')
+    }
+
+    const accessToken = await this.generateAccessToken(newUser._id as string)
 
     return { accessToken }
   }

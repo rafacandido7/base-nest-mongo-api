@@ -2,6 +2,7 @@
 /dist
 /node_modules
 /build
+/data
 
 # Logs
 logs
@@ -15,7 +16,7 @@ lerna-debug.log*
 # OS
 .DS_Store
 
-# Tests
+# Test
 /coverage
 /.nyc_output
 

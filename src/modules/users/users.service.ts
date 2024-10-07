@@ -19,7 +19,13 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     await this.validateCretendials(createUserDto)
 
-    return await this.usersRepository.create(createUserDto)
+    const user = await this.usersRepository.create(createUserDto)
+
+    if (!user) {
+      throw new Error('Error on create user!')
+    }
+
+    return user
   }
 
   async findOneByEmail(email: string) {
@@ -53,10 +59,18 @@ export class UsersService {
     id: string | Types.ObjectId,
     projection: Projection<User>,
   ): Promise<User> {
-    const user = await this.usersRepository.findOneById(id, projection)
+    const user = await this.usersRepository.findById(id, projection)
+
     if (!user) {
       throw new NotFoundException('User not found.')
     }
+
     return user
+  }
+
+  async findOneByCredentials(login: string) {
+    return this.usersRepository.findOne({
+      $or: [{ email: login }, { username: login }],
+    })
   }
 }
