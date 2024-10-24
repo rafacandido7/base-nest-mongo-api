@@ -1,31 +1,16 @@
 version: '3.8'
 
 services:
-
   mongodb:
-    image: mongo:latest
+    image: mongodb/mongodb-atlas-local
     container_name: mongodb-baseapi
-    ports:
-      - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongoAtlasAdmin
-      - MONGO_INITDB_ROOT_PASSWORD=HOyYMG1KoDfuYLf7IqqP
+      - MONGODB_INITDB_ROOT_USERNAME=mongoAtlasAdmin
+      - MONGODB_INITDB_ROOT_PASSWORD=HOyYMG1KoDfuYLf7IqqP
+    ports:
+      - 27018:27017
     networks:
       - net
-
-  # mongodb:
-  #   image: mongodb/mongodb-atlas-local
-  #   container_name: mongodb-atlas-baseapi
-  #   environment:
-  #     - MONGODB_INITDB_ROOT_USERNAME=mongoAtlasAdmin
-  #     - MONGODB_INITDB_ROOT_PASSWORD=HOyYMG1KoDfuYLf7IqqP
-  #   ports:
-  #     - 27017:27017
-  #   volumes:
-  #     - ./data/mongo:/data/db
-  #   restart: always
-  #   networks:
-  #     - net
 
 networks:
   net:

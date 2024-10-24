@@ -1,3 +1,4 @@
+import { Request } from 'express'
 import {
   CanActivate,
   ExecutionContext,
@@ -6,17 +7,20 @@ import {
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
-import { Request } from 'express'
+
+import { IsPublicKey } from '@/shared/decorators'
+import { UsersService } from '../users'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
+    private readonly usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IsPublicKey, [
       context.getClass(),
       context.getHandler(),
     ])
@@ -35,6 +39,7 @@ export class AuthGuard implements CanActivate {
         })
 
         request.userId = payload.sub
+        request.user = await this.usersService.me(payload.sub)
       } catch {
         throw new UnauthorizedException()
       }

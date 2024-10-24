@@ -33,8 +33,12 @@ export class GenericRepository<T> {
   async findById(
     _id: string | Types.ObjectId,
     projection?: Projection<T>,
+    selectPopulated?: string,
   ): Promise<T> {
-    return this.genericModel.findById(_id, projection).exec()
+    return this.genericModel
+      .findById(_id, projection)
+      .populate(selectPopulated)
+      .exec()
   }
 
   async findOne(
@@ -94,5 +98,9 @@ export class GenericRepository<T> {
       new: true,
       projection,
     })
+  }
+
+  async insertMany(documents: unknown[]) {
+    return this.genericModel.insertMany(documents)
   }
 }

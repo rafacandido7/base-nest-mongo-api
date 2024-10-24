@@ -24,9 +24,9 @@ export class HttpLoggingInterceptor implements NestInterceptor {
       tap((response) => {
         const message =
           JSON.stringify(response || {})?.length > 5000
-            ? `<<< response cutted <<< ${JSON.stringify(
+            ? `<<< ${method} ${url} ${Date.now() - date} response cutted <<< ${JSON.stringify(
                 response || {},
-              ).substring(0, 10000)}`
+              ).substring(0, 5000)}`
             : `<<< ${method} ${url} ${Date.now() - date} ${JSON.stringify(
                 response || {},
               )}`

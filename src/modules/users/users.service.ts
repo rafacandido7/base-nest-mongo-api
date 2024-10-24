@@ -11,10 +11,14 @@ import { User } from './schemas/users.schema'
 import { CreateUserDto } from './dto'
 
 import { Projection } from '@/shared/types'
+import { GroupsService } from '../groups'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly groupsService: GroupsService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     await this.validateCretendials(createUserDto)
@@ -72,5 +76,39 @@ export class UsersService {
     return this.usersRepository.findOne({
       $or: [{ email: login }, { username: login }],
     })
+  }
+
+  async addGroupToUser(userId: string, groupId: string): Promise<User> {
+    const user = await this.usersRepository.findById(userId)
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    const group = await this.groupsService.findByObjectId(groupId)
+    if (!group || !group._id) {
+      throw new NotFoundException('Group not found')
+    }
+
+    const groupObjectId = new Types.ObjectId(group._id.toString())
+
+    await this.usersRepository.update(user._id.toString(), {
+      group: groupObjectId,
+    })
+
+    return await this.usersRepository.findById(userId, {}, 'group')
+  }
+
+  async me(userId: string) {
+    return await this.usersRepository.findById(userId, {}, 'group')
+  }
+
+  async getAll() {
+    return this.usersRepository.aggregate([
+      {
+        $project: {
+          password: 0,
+        },
+      },
+    ])
   }
 }
